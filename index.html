@@ -3,25 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SMTV Blessing Amplification Dashboard</title>
+  <title>SMTV Dashboard – Rumah Kasih Edition</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      height: 100%;
-      background: linear-gradient(to bottom, #e0f7fa, #ffffff);
       font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #e0f7fa, #ffffff);
       color: #333;
-      overflow: hidden;
+      overflow-x: hidden;
     }
     #header {
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.9);
       padding: 15px;
       text-align: center;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       position: relative;
-      z-index: 2;
+      z-index: 10;
     }
     #header h1 {
       margin: 0;
@@ -40,25 +39,44 @@
       top: 10px;
       width: 60px;
     }
-    #menuToggle {
+    #menu-toggle {
       display: none;
       position: absolute;
       right: 15px;
       top: 15px;
-      font-size: 1.5rem;
+      font-size: 24px;
       background: none;
       border: none;
-      cursor: pointer;
-      z-index: 3;
+      color: #333;
+      z-index: 11;
+    }
+    #mobile-menu {
+      display: none;
+      flex-direction: column;
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 20px;
+      position: absolute;
+      top: 70px;
+      left: 0;
+      right: 0;
+      z-index: 9;
+    }
+    #mobile-menu button {
+      background-color: #2196f3;
+      color: white;
+      border: none;
+      padding: 12px;
+      margin: 6px 0;
+      font-size: 1rem;
+      border-radius: 5px;
     }
     #controls {
       display: flex;
-      justify-content: space-between;
       flex-wrap: wrap;
+      justify-content: space-between;
       padding: 10px;
-      background: rgba(255, 255, 255, 0.7);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      z-index: 1;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     .left-group, .right-group {
       display: flex;
@@ -93,15 +111,14 @@
     }
     #videoContainer {
       display: grid;
-      width: 100vw;
-      height: calc(100vh - 170px);
-      overflow: hidden;
-      gap: 4px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 10px;
+      padding: 10px;
     }
     .video-wrapper {
       position: relative;
       width: 100%;
-      height: 100%;
+      aspect-ratio: 16 / 9;
     }
     .video-wrapper iframe {
       position: absolute;
@@ -113,15 +130,11 @@
       border: 2px solid #81d4fa;
     }
     @media (max-width: 768px) {
-      #menuToggle {
-        display: block;
-      }
       #controls {
-        flex-direction: column;
         display: none;
       }
-      #controls.show {
-        display: flex;
+      #menu-toggle {
+        display: block;
       }
     }
   </style>
@@ -131,7 +144,20 @@
     <img id="logo" src="https://i.imgur.com/S7fBbTw.png" alt="SMTV Logo">
     <h1>🌈 SMTV Blessing Amplifier 🌈</h1>
     <p>"Maximizing Master's Blessing thru SMTV to save Souls and Planet."</p>
-    <button id="menuToggle" onclick="toggleMenu()">☰</button>
+    <button id="menu-toggle" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
+  </div>
+
+  <div id="mobile-menu">
+    <button onclick="addNewIframe()">➕ Add Video</button>
+    <button onclick="playAll()">▶️ Play All</button>
+    <button onclick="pauseAll()">⏸ Pause All</button>
+    <button onclick="clearVideos()">🗑️ Clear All</button>
+    <button onclick="toggleFullscreen()">🔲 Fullscreen</button>
+    <button onclick="addPresetVideo('ZzWBpGwKoaI')">📺 SMTV 1080p</button>
+    <button onclick="addPresetVideo('qHIk_qdNFy0')">📺 SMTV 720p</button>
+    <button onclick="addPresetVideo('DGagyjRhQsU')">📺 SMTV 40Q</button>
+    <button onclick="addPresetVideo('8GFbPTKiReM')">🙏 Daily Prayer</button>
+    <button onclick="openTestimonialPlayer()">🌟 Testimonial</button>
   </div>
 
   <div id="controls">
@@ -157,7 +183,12 @@
 
   <script>
     const videoContainer = document.getElementById('videoContainer');
+    const mobileMenu = document.getElementById('mobile-menu');
     let videoList = [];
+
+    function toggleMobileMenu() {
+      mobileMenu.style.display = mobileMenu.style.display === 'flex' ? 'none' : 'flex';
+    }
 
     function extractVideoID(url) {
       const match = url.match(/[?&]v=([^&#]+)/);
@@ -192,7 +223,6 @@
       for (let i = 0; i < count; i++) {
         createIframe(videoID, false);
       }
-      resizeGrid();
     }
 
     function saveVideo(videoID, count = 1) {
@@ -210,7 +240,6 @@
       localStorage.removeItem('ytDashboard');
       videoContainer.innerHTML = '';
       videoList = [];
-      resizeGrid();
     }
 
     function playAll() {
@@ -239,27 +268,13 @@
       const count = parseInt(document.getElementById('videoCount').value) || 1;
       saveVideo(videoID, count);
       for (let i = 0; i < count; i++) createIframe(videoID, false);
-      resizeGrid();
-    }
-
-    function resizeGrid() {
-      const count = document.querySelectorAll('.video-wrapper').length;
-      const columns = Math.ceil(Math.sqrt(count));
-      const rows = Math.ceil(count / columns);
-      videoContainer.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
-      videoContainer.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
     }
 
     function openTestimonialPlayer() {
       window.open('testimonial-player.html', '_blank');
     }
 
-    function toggleMenu() {
-      const controls = document.getElementById('controls');
-      controls.classList.toggle('show');
-    }
-
-    // Auto-reset all iframes every 3 hours
+    // Auto-reset all videos every 3 hours
     setInterval(() => {
       clearVideos();
       console.log("Auto-cleared videos to prevent memory leak.");
@@ -267,7 +282,6 @@
 
     window.onload = () => {
       loadSavedVideos();
-      resizeGrid();
     };
   </script>
 </body>
