@@ -21,7 +21,7 @@
       text-align: center;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
     #header h1 {
       margin: 0;
@@ -39,6 +39,17 @@
       left: 10px;
       top: 10px;
       width: 60px;
+    }
+    #menuToggle {
+      display: none;
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      font-size: 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 3;
     }
     #controls {
       display: flex;
@@ -101,6 +112,18 @@
       border-radius: 10px;
       border: 2px solid #81d4fa;
     }
+    @media (max-width: 768px) {
+      #menuToggle {
+        display: block;
+      }
+      #controls {
+        flex-direction: column;
+        display: none;
+      }
+      #controls.show {
+        display: flex;
+      }
+    }
   </style>
 </head>
 <body>
@@ -108,6 +131,7 @@
     <img id="logo" src="https://i.imgur.com/S7fBbTw.png" alt="SMTV Logo">
     <h1>🌈 SMTV Blessing Amplifier 🌈</h1>
     <p>"Maximizing Master's Blessing thru SMTV to save Souls and Planet."</p>
+    <button id="menuToggle" onclick="toggleMenu()">☰</button>
   </div>
 
   <div id="controls">
@@ -229,6 +253,17 @@
     function openTestimonialPlayer() {
       window.open('testimonial-player.html', '_blank');
     }
+
+    function toggleMenu() {
+      const controls = document.getElementById('controls');
+      controls.classList.toggle('show');
+    }
+
+    // Auto-reset all iframes every 3 hours
+    setInterval(() => {
+      clearVideos();
+      console.log("Auto-cleared videos to prevent memory leak.");
+    }, 3 * 60 * 60 * 1000);
 
     window.onload = () => {
       loadSavedVideos();
