@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌟 Testimonial Player</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    iframe {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      aspect-ratio: 16 / 9;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="testimonialFrame" allowfullscreen></iframe>
+
+  <script>
+    const testimonialUrls = [
+      "https://suprememastertv.com/en1/v/228536081901.html",
+      "https://suprememastertv.com/en1/v/233667731251.html",
+      "https://suprememastertv.com/en1/v/245875177398.html",
+      "https://suprememastertv.com/en1/v/258322522960.html",
+      "https://suprememastertv.com/en1/v/259623459470.html",
+      "https://suprememastertv.com/en1/v/194152471535.html"
+    ];
+
+    let currentIndex = 0;
+    const iframe = document.getElementById("testimonialFrame");
+
+    function playNext() {
+      if (currentIndex >= testimonialUrls.length) {
+        currentIndex = 0; // loop back to beginning or stop
+      }
+      iframe.src = testimonialUrls[currentIndex];
+    }
+
+    iframe.addEventListener("load", () => {
+      setTimeout(() => {
+        currentIndex++;
+        playNext();
+      }, 1000 * 60 * 3); // approximate time per video (3 minutes)
+    });
+
+    playNext();
+  </script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMTV Blessing Amplification Dashboard</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+      font-family: 'Segoe UI', sans-serif;
+      color: #333;
+      overflow: hidden;
+    }
+    #header {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(8px);
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 1;
+    }
+    #header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      color: #f9a825;
+    }
+    #header p {
+      margin: 5px 0 0;
+      font-size: 0.9rem;
+      font-style: italic;
+      color: #666;
+    }
+    #logo {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      width: 60px;
+    }
+    #controls {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+    .left-group, .right-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    button, input[type="text"], input[type="number"] {
+      padding: 10px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .left-group button {
+      background-color: #4fc3f7;
+      color: white;
+    }
+    .right-group button {
+      background-color: #fdd835;
+      color: #333;
+    }
+    input[type="text"] {
+      width: 180px;
+      background-color: #e1f5fe;
+      color: #0277bd;
+    }
+    input[type="number"] {
+      width: 60px;
+      background-color: #e1f5fe;
+      color: #0277bd;
+      text-align: center;
+    }
+    #videoContainer {
+      display: grid;
+      width: 100vw;
+      height: calc(100vh - 170px);
+      overflow: hidden;
+      gap: 4px;
+    }
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      border: 2px solid #81d4fa;
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <img id="logo" src="https://i.imgur.com/S7fBbTw.png" alt="SMTV Logo">
+    <h1>🌈 SMTV Blessing Amplifier 🌈</h1>
+    <p>"Maximizing Master's Blessing thru SMTV to save Souls and Planet."</p>
+  </div>
+
+  <div id="controls">
+    <div class="left-group">
+      <input type="text" id="videoUrl" placeholder="Paste YouTube URL">
+      <input type="number" id="videoCount" min="1" value="1">
+      <button onclick="addNewIframe()">➕ Add Video</button>
+      <button onclick="playAll()">▶️ Play All</button>
+      <button onclick="pauseAll()">⏸ Pause All</button>
+      <button onclick="clearVideos()">🗑️ Clear All</button>
+      <button onclick="toggleFullscreen()">🔲 Fullscreen</button>
+    </div>
+    <div class="right-group">
+      <button onclick="addPresetVideo('ZzWBpGwKoaI')">📺 SMTV 1080p</button>
+      <button onclick="addPresetVideo('qHIk_qdNFy0')">📺 SMTV 720p</button>
+      <button onclick="addPresetVideo('DGagyjRhQsU')">📺 SMTV 40Q</button>
+      <button onclick="addPresetVideo('8GFbPTKiReM')">🙏 Daily Prayer</button>
+      <button onclick="openTestimonialPlayer()">🌟 Testimonial</button>
+    </div>
+  </div>
+
+  <div id="videoContainer"></div>
+
+  <script>
+    const videoContainer = document.getElementById('videoContainer');
+    let videoList = [];
+
+    function extractVideoID(url) {
+      const match = url.match(/[?&]v=([^&#]+)/);
+      return match ? match[1] : null;
+    }
+
+    function createIframe(videoID, autoplay = false) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'video-wrapper';
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${videoID}?autoplay=${autoplay ? 1 : 0}&mute=1&loop=1&playlist=${videoID}`;
+      iframe.dataset.videoId = videoID;
+      wrapper.appendChild(iframe);
+      videoContainer.appendChild(wrapper);
+      videoList.push({ videoID, wrapper });
+    }
+
+    function addNewIframe(fromUser = true, id = null, count = 1) {
+      let videoID = id;
+      if (fromUser) {
+        const input = document.getElementById('videoUrl');
+        const url = input.value.trim();
+        videoID = extractVideoID(url);
+        if (!videoID) {
+          alert('Invalid YouTube URL');
+          return;
+        }
+        input.value = '';
+        count = parseInt(document.getElementById('videoCount').value) || 1;
+        saveVideo(videoID, count);
+      }
+      for (let i = 0; i < count; i++) {
+        createIframe(videoID, false);
+      }
+      resizeGrid();
+    }
+
+    function saveVideo(videoID, count = 1) {
+      const stored = JSON.parse(localStorage.getItem('ytDashboard')) || [];
+      for (let i = 0; i < count; i++) stored.push(videoID);
+      localStorage.setItem('ytDashboard', JSON.stringify(stored));
+    }
+
+    function loadSavedVideos() {
+      const stored = JSON.parse(localStorage.getItem('ytDashboard')) || [];
+      stored.forEach(id => createIframe(id, false));
+    }
+
+    function clearVideos() {
+      localStorage.removeItem('ytDashboard');
+      videoContainer.innerHTML = '';
+      videoList = [];
+      resizeGrid();
+    }
+
+    function playAll() {
+      document.querySelectorAll('iframe').forEach(iframe => {
+        const videoID = iframe.dataset.videoId;
+        iframe.src = `https://www.youtube.com/embed/${videoID}?autoplay=1&mute=1&loop=1&playlist=${videoID}`;
+      });
+    }
+
+    function pauseAll() {
+      document.querySelectorAll('iframe').forEach(iframe => {
+        const videoID = iframe.dataset.videoId;
+        iframe.src = `https://www.youtube.com/embed/${videoID}?autoplay=0&mute=1&loop=1&playlist=${videoID}`;
+      });
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    function addPresetVideo(videoID) {
+      const count = parseInt(document.getElementById('videoCount').value) || 1;
+      saveVideo(videoID, count);
+      for (let i = 0; i < count; i++) createIframe(videoID, false);
+      resizeGrid();
+    }
+
+    function resizeGrid() {
+      const count = document.querySelectorAll('.video-wrapper').length;
+      const columns = Math.ceil(Math.sqrt(count));
+      const rows = Math.ceil(count / columns);
+      videoContainer.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+      videoContainer.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+    }
+
+    function openTestimonialPlayer() {
+      window.open('testimonial-player.html', '_blank');
+    }
+
+    window.onload = () => {
+      loadSavedVideos();
+      resizeGrid();
+    };
+  </script>
+</body>
+</html>
