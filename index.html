@@ -1,75 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SMTV Dashboard – Rumah Kasih Edition</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMTV Dashboard – Rumah Kasih</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to bottom, #e0f7fa, #ffffff);
       color: #333;
       overflow-x: hidden;
     }
-    #header {
+
+    header {
       background: rgba(255, 255, 255, 0.9);
-      padding: 15px;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      position: relative;
+      padding: 10px 15px;
+      position: sticky;
+      top: 0;
       z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    #header h1 {
-      margin: 0;
-      font-size: 1.6rem;
+
+    header h1 {
+      font-size: 1.5rem;
       color: #f9a825;
+      margin: 0;
     }
-    #header p {
-      margin: 5px 0 0;
-      font-size: 0.9rem;
+
+    header p {
+      font-size: 0.85rem;
       font-style: italic;
       color: #666;
+      margin: 0;
     }
+
     #logo {
-      position: absolute;
-      left: 10px;
-      top: 10px;
-      width: 60px;
+      height: 40px;
     }
-    #menu-toggle {
-      display: none;
-      position: absolute;
-      right: 15px;
-      top: 15px;
-      font-size: 24px;
+
+    #mobileMenuToggle {
       background: none;
       border: none;
-      color: #333;
-      z-index: 11;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #444;
+      display: none;
     }
-    #mobile-menu {
+
+    #mobileMenu {
       display: none;
       flex-direction: column;
-      background-color: rgba(0, 0, 0, 0.9);
-      padding: 20px;
-      position: absolute;
-      top: 70px;
+      background-color: rgba(0, 0, 0, 0.7);
+      position: fixed;
+      top: 60px;
       left: 0;
       right: 0;
-      z-index: 9;
+      padding: 15px;
+      z-index: 20;
     }
-    #mobile-menu button {
-      background-color: #2196f3;
-      color: white;
+
+    #mobileMenu button {
+      background-color: rgba(255, 255, 255, 0.95);
       border: none;
       padding: 12px;
       margin: 6px 0;
+      border-radius: 6px;
       font-size: 1rem;
-      border-radius: 5px;
+      color: #333;
+      font-weight: 500;
     }
+
     #controls {
       display: flex;
       flex-wrap: wrap;
@@ -78,11 +82,13 @@
       background: rgba(255, 255, 255, 0.8);
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
+
     .left-group, .right-group {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
     }
+
     button, input[type="text"], input[type="number"] {
       padding: 10px;
       font-weight: bold;
@@ -90,36 +96,35 @@
       border-radius: 6px;
       cursor: pointer;
     }
+
     .left-group button {
       background-color: #4fc3f7;
       color: white;
     }
+
     .right-group button {
       background-color: #fdd835;
       color: #333;
     }
-    input[type="text"] {
-      width: 180px;
+
+    input[type="text"], input[type="number"] {
       background-color: #e1f5fe;
       color: #0277bd;
     }
-    input[type="number"] {
-      width: 60px;
-      background-color: #e1f5fe;
-      color: #0277bd;
-      text-align: center;
-    }
+
     #videoContainer {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 10px;
+      gap: 8px;
       padding: 10px;
     }
+
     .video-wrapper {
       position: relative;
       width: 100%;
       aspect-ratio: 16 / 9;
     }
+
     .video-wrapper iframe {
       position: absolute;
       top: 0;
@@ -129,25 +134,37 @@
       border-radius: 10px;
       border: 2px solid #81d4fa;
     }
+
     @media (max-width: 768px) {
       #controls {
         display: none;
       }
-      #menu-toggle {
+
+      #mobileMenuToggle {
         display: block;
+      }
+
+      header h1 {
+        font-size: 1.2rem;
+      }
+
+      header p {
+        font-size: 0.7rem;
       }
     }
   </style>
 </head>
 <body>
-  <div id="header">
-    <img id="logo" src="https://i.imgur.com/S7fBbTw.png" alt="SMTV Logo">
-    <h1>🌈 SMTV Blessing Amplifier 🌈</h1>
-    <p>"Maximizing Master's Blessing thru SMTV to save Souls and Planet."</p>
-    <button id="menu-toggle" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
-  </div>
+  <header>
+    <img src="https://i.imgur.com/S7fBbTw.png" alt="SMTV Logo" id="logo" />
+    <div>
+      <h1>🌈 SMTV Blessing Amplifier</h1>
+      <p>"Maximizing Master's Blessing to save souls and the planet"</p>
+    </div>
+    <button id="mobileMenuToggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+  </header>
 
-  <div id="mobile-menu">
+  <div id="mobileMenu">
     <button onclick="addNewIframe()">➕ Add Video</button>
     <button onclick="playAll()">▶️ Play All</button>
     <button onclick="pauseAll()">⏸ Pause All</button>
@@ -182,13 +199,13 @@
   <div id="videoContainer"></div>
 
   <script>
-    const videoContainer = document.getElementById('videoContainer');
-    const mobileMenu = document.getElementById('mobile-menu');
-    let videoList = [];
-
-    function toggleMobileMenu() {
-      mobileMenu.style.display = mobileMenu.style.display === 'flex' ? 'none' : 'flex';
+    function toggleMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
     }
+
+    const videoContainer = document.getElementById('videoContainer');
+    let videoList = [];
 
     function extractVideoID(url) {
       const match = url.match(/[?&]v=([^&#]+)/);
@@ -274,7 +291,7 @@
       window.open('testimonial-player.html', '_blank');
     }
 
-    // Auto-reset all videos every 3 hours
+    // Auto-reset every 3 hours
     setInterval(() => {
       clearVideos();
       console.log("Auto-cleared videos to prevent memory leak.");
